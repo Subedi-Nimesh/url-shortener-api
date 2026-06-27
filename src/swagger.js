@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       { url: 'http://localhost:3000', description: 'Local' },
-      { url: 'https://url-shortener-api-ns.onrender.com', description: 'Production' },
+      { url: 'https://url-shortener-api-frf1.onrender.com', description: 'Production' },
     ],
     components: {
       securitySchemes: {
