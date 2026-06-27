@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: url-shortener-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma db push
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: url-shortener-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: pserv
+    name: url-shortener-db
+    plan: free
+    ipAllowList: []
