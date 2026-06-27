@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import rateLimit from 'express-rate-limit'
 import swaggerUi from 'swagger-ui-express'
 import { PrismaClient } from '@prisma/client'
@@ -10,7 +12,7 @@ import { swaggerSpec } from './swagger.js'
 
 dotenv.config()
 
-const app = express()
+export const app = express()
 const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3000
 
@@ -24,6 +26,10 @@ const limiter = rateLimit({
   legacyHeaders: false,
 })
 app.use('/api/', limiter)
+
+app.get('/', (_req, res) => {
+  res.json({ status: 'up', service: 'url-shortener-api', docs: '/api-docs' })
+})
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'up', service: 'url-shortener-api' })
@@ -48,9 +54,13 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Not found' })
 })
 
-app.listen(PORT, () => {
-  console.log(`URL Shortener API running on port ${PORT}`)
-  console.log(`Swagger docs: http://localhost:${PORT}/api-docs`)
-})
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+
+if (isMainModule) {
+  app.listen(PORT, () => {
+    console.log(`URL Shortener API running on port ${PORT}`)
+    console.log(`Swagger docs: http://localhost:${PORT}/api-docs`)
+  })
+}
 
 export { prisma }
